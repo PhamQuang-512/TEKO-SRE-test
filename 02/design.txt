@@ -1,0 +1,16 @@
+To design an API gateway with a rate limit function that can work effectively in a cluster model, we need a distributed rate-limiting mechanism. This ensures that the rate limit is enforced globally across all instances of the API gateway in the cluster. 
+
+Main components:
+- Network Load Balancer: The network load balancer to distribute incoming request to different API Gateway instances -> Ensure system can scale horizontally 
+- API Gateway Instances: Multiple instances of the API gateway deployed in a cluster mode to handle incoming request, perform logic of rate limit core function 
+- Distributed Data Store: Using redis to store request information -> Each client' s request count and timestamp can be stored as a key-value pair.
+
+Some key consideration: 
+- Data Consistency: Use Redis replication to handle failover or Redis clustering for high availability and partitioning.
+- Scalability: The system can scale horizontally by adding more API gateway instances.
+- Latency: Minimize latency by colocating Redis and API gateway instances in the same data center or region.
+- Fault Tolerance: Implement retry logic for Redis operations in case of transient network issues.
+- Monitoring and logging: Setup monitoring to track the rate limit logic.
+Log the rate limit checks and decisions for audit purposes. Monitor Redis health and set up alerts.
+
+*** We need to change some code in function 'rate_limit_checker' to use redis as a place to store and check the incoming request and rate limit. But overall, the logic doesn't changed
